@@ -437,11 +437,23 @@ except Exception as e:
     model_error = str(e)
 
 # ─── Session State Defaults ───────────────────────────────────────────────────
-# FIX #1: Initialize widget keys in session_state so example buttons can write to them
+# FIX #1: Initialize widget keys so text_input widgets have a stable default.
+# The example loader uses on_click= callbacks (defined below) to write to these
+# keys — Streamlit only allows writing to a widget's key from a callback, not
+# from the script body after the widget has already been rendered.
 if "sgrna_input" not in st.session_state:
     st.session_state["sgrna_input"] = ""
 if "off_input" not in st.session_state:
     st.session_state["off_input"] = ""
+
+def _load_example(sg: str, off: str) -> None:
+    """Callback: populate the sequence inputs from a preset example.
+
+    Must be a callback (passed to on_click=) so Streamlit allows writing to
+    the widget-bound session_state keys before the widgets re-render.
+    """
+    st.session_state["sgrna_input"] = sg
+    st.session_state["off_input"]   = off
 
 # ─── Sidebar ─────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -564,12 +576,13 @@ with tab_predict:
             "Low Risk (many mismatches)": ("GGGAAAGACCCAGCATCCGT", "CAAGGCATGATCAGCTTTAA"),
         }
         for label, (sg, off) in examples.items():
-            if st.button(f"Load: {label}", key=label, use_container_width=True):
-                # FIX #1: write directly to session_state keys that the
-                # text_input widgets are bound to — values update on rerun
-                st.session_state["sgrna_input"] = sg
-                st.session_state["off_input"]   = off
-                st.rerun()
+            st.button(
+                f"Load: {label}",
+                key=label,
+                on_click=_load_example,
+                kwargs={"sg": sg, "off": off},
+                use_container_width=True,
+            )
 
     # ── Output Panel ─────────────────────────────────────────────────────────
     with col_output:
