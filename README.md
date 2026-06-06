@@ -1,130 +1,226 @@
-# 🧬 CRISPR Off-Target Prediction System
+# 🧬 CRISPR-AI-ML: Off-Target Prediction System
 
-A machine learning system that predicts whether a DNA sequence (off-target site) is **SAFE** or poses a risk of **unintended gene editing** by CRISPR-Cas9.
+A machine learning-powered web application that predicts whether a DNA sequence (off-target site) is **SAFE** or presents a risk of unintended **CRISPR-Cas9 gene editing**.
+
+The system uses trained machine learning models to analyze sgRNA and off-target sequence pairs and estimate off-target activity risk.
 
 ---
 
-## 📁 Project Structure
+# 🌐 Live Project Resources
 
+### GitHub Repository
+
+```text
+https://github.com/maulikk3/CRISPR-AI-ML
 ```
-crispr_project/
-├── app.py              ← Streamlit web application
-├── train_model.py      ← ML training pipeline
-├── requirements.txt    ← Python dependencies
-├── README.md           ← This file
-├── CIRCLE_seq.csv      ← Primary training dataset (place here)
-├── GUIDE-Seq.csv       ← Validation dataset (place here)
+
+### Docker Hub Repository
+
+```text
+https://hub.docker.com/r/imk3/crispr-predictor
+```
+
+Docker Image:
+
+```text
+imk3/crispr-predictor
+```
+
+---
+
+# 🚀 Features
+
+* Interactive Streamlit dashboard
+* CRISPR off-target risk prediction
+* Random Forest classifier
+* Logistic Regression baseline model
+* Feature engineering from DNA sequences
+* Risk-level classification
+* Dockerized deployment
+* GitHub source code
+
+---
+
+# 📁 Project Structure
+
+```text
+CRISPR-AI-ML/
 │
-└── (generated after training)
-    ├── rf_model.joblib ← Trained Random Forest model
-    ├── lr_model.joblib ← Trained Logistic Regression model
-    ├── scaler.joblib   ← Feature scaler for LR
-    └── metrics.json    ← Evaluation metrics
+├── app.py
+├── train_model.py
+├── requirements.txt
+├── Dockerfile
+├── README.md
+│
+├── CIRCLE_seq.csv
+├── GUIDE-Seq.csv
+│
+├── rf_model.joblib
+├── lr_model.joblib
+├── scaler.joblib
+└── metrics.json
 ```
 
 ---
 
-## 🚀 Quick Start
+# 🔬 Machine Learning Workflow
 
-### 1. Install dependencies
+```text
+DNA Sequences
+      │
+      ▼
+Data Cleaning
+      │
+      ▼
+Feature Engineering
+      │
+      ▼
+Model Training
+      │
+      ▼
+Random Forest Prediction
+      │
+      ▼
+Risk Classification
+      │
+      ▼
+Streamlit Interface
+```
+
+---
+
+# 📊 Extracted Features
+
+| Feature                  | Description                |
+| ------------------------ | -------------------------- |
+| mismatch_count           | Number of mismatched bases |
+| similarity_score         | Sequence similarity        |
+| seed_mismatch            | Seed region mismatches     |
+| max_consecutive_mismatch | Longest mismatch streak    |
+| gc_content_sgrna         | sgRNA GC content           |
+| gc_content_off           | Off-target GC content      |
+| length_diff              | Length difference          |
+| distal_mismatch          | PAM-distal mismatches      |
+| first_half_mismatch      | First-half mismatches      |
+
+---
+
+# 📈 Model Performance
+
+| Model               | Accuracy   | ROC-AUC    |
+| ------------------- | ---------- | ---------- |
+| Random Forest       | **90.87%** | **0.9505** |
+| Logistic Regression | 80.05%     | 0.9020     |
+
+---
+
+# 🧬 Datasets
+
+### CIRCLE-seq
+
+Comprehensive in-vitro off-target detection dataset.
+
+### GUIDE-seq
+
+Genome-wide unbiased identification of CRISPR off-target effects.
+
+---
+
+# 💻 Run Locally
+
+## Clone Repository
+
+```bash
+git clone https://github.com/maulikk3/CRISPR-AI-ML.git
+cd CRISPR-AI-ML
+```
+
+## Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Place datasets
-Put `CIRCLE_seq.csv` and `GUIDE-Seq.csv` in the same folder as the scripts.
+## Launch Application
 
-### 3. Train the models
-```bash
-python train_model.py
-```
-
-Or specify custom paths:
-```bash
-python train_model.py --circle path/to/CIRCLE_seq.csv --guide path/to/GUIDE-Seq.csv
-```
-
-### 4. Launch the Streamlit app
 ```bash
 streamlit run app.py
 ```
 
----
+Open:
 
-## 🔬 How It Works
-
-### ML Pipeline
-```
-Raw CSV datasets
-      ↓
-Data cleaning (remove gap chars, filter short seqs)
-      ↓
-Class balancing (downsample 10:1 neg:pos ratio)
-      ↓
-Feature engineering (9 numerical features per pair)
-      ↓
-80/20 train/test split (stratified)
-      ↓
-Random Forest + Logistic Regression training
-      ↓
-Evaluation (Accuracy, Confusion Matrix, ROC-AUC)
-      ↓
-Model serialisation (joblib)
-      ↓
-Streamlit prediction interface
+```text
+http://localhost:8501
 ```
 
-### Features Extracted
-| Feature | Description |
-|---------|-------------|
-| `mismatch_count` | Total mismatches between sgRNA and target |
-| `similarity_score` | Proportion of matching bases |
-| `seed_mismatch` | Mismatches in PAM-proximal 12 bases |
-| `max_consecutive_mismatch` | Longest mismatch run |
-| `gc_content_sgrna` | GC fraction of the guide RNA |
-| `gc_content_off` | GC fraction of the off-target sequence |
-| `length_diff` | Absolute difference in sequence lengths |
-| `distal_mismatch` | Mismatches in first 8 (PAM-distal) bases |
-| `first_half_mismatch` | Mismatches in first half of alignment |
+---
 
-### Risk Thresholds
-| Probability | Risk Level | Recommendation |
-|-------------|-----------|----------------|
-| < 35% | 🟢 LOW | ✅ SAFE |
-| 35–65% | 🟡 MEDIUM | ⚠️ CAUTION |
-| > 65% | 🔴 HIGH | 🚨 NOT SAFE |
+# 🐳 Run Using Docker Hub (Recommended)
+
+Pull image:
+
+```bash
+docker pull imk3/crispr-predictor
+```
+
+Run container:
+
+```bash
+docker run -p 8501:8501 imk3/crispr-predictor
+```
+
+Open:
+
+```text
+http://localhost:8501
+```
 
 ---
 
-## 📊 Model Performance
+# 🐳 Build Docker Image Locally
 
-| Model | Accuracy | ROC-AUC |
-|-------|----------|---------|
-| Random Forest | **90.87%** | **0.9505** |
-| Logistic Regression | 80.05% | 0.9020 |
+Build image:
 
-Trained on CIRCLE-seq (584,949 pairs) + GUIDE-seq (213,933 pairs).
+```bash
+docker build -t crispr-predictor .
+```
 
----
+Run image:
 
-## 🧬 Datasets
-
-- **CIRCLE-seq** — Comprehensive *in vitro* off-target detection; 7,371 off-target sites.
-- **GUIDE-seq** — Genome-wide, unbiased DSB identification; 50 validated off-target sites.
+```bash
+docker run -p 8501:8501 crispr-predictor
+```
 
 ---
 
-## ⚠️ Disclaimer
+# 🛠️ Technology Stack
 
-This tool is for **research and educational purposes only**. It should not be used as the sole basis for clinical or therapeutic decisions. Always validate computationally predicted off-targets experimentally.
+* Python 3.11
+* Streamlit
+* scikit-learn
+* Pandas
+* NumPy
+* Matplotlib
+* Seaborn
+* Joblib
+* Docker
 
 ---
 
-## 🛠️ Tech Stack
+# ⚠️ Disclaimer
 
-- Python 3.x
-- scikit-learn (Random Forest, Logistic Regression)
-- pandas / numpy (data processing)
-- Streamlit (web interface)
-- matplotlib / seaborn (visualization)
-- joblib (model serialisation)
+This project is intended for research and educational purposes only.
+
+Predictions generated by this application should not be used as the sole basis for clinical, therapeutic, or medical decisions. Experimental validation is always recommended.
+
+---
+
+# 👨‍💻 Author
+
+**Maulik**
+
+GitHub:
+https://github.com/maulikk3
+
+Docker Hub:
+https://hub.docker.com/r/imk3/crispr-predictor
